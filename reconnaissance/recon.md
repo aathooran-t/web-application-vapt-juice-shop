@@ -1,8 +1,8 @@
-# Day 1 – Reconnaissance
+ Reconnaissance
 
 ## 1. Objective
 
-The objective of Day 1 was to perform initial reconnaissance against the OWASP Juice Shop web application running in a controlled local Docker environment.
+The objective of the reconnaissance phase was to perform initial information gathering against the OWASP Juice Shop web application running in a controlled local Docker environment.
 
 The reconnaissance phase focused on identifying:
 
