@@ -151,7 +151,92 @@ Evidence, if completed:
 
 ---
 
-## 8. Security-Relevant Observations
+## Additional Function Mapping
+
+### Product Review
+
+The product-review function accepts user-controlled review content and associates it with a product identifier.
+
+The server accepted the submitted review and returned:
+
+```http
+HTTP/1.1 201 Created
+```
+
+```json
+{"status":"success"}
+```
+
+The review message and product identifier were recorded for later input-validation and authorization testing. No vulnerability was confirmed during enumeration.
+
+Evidence:
+
+* `../screenshots/product-review-request.png`
+* `../screenshots/product-review-response.png`
+
+### Add Product to Basket
+
+Adding a product generated the following request:
+
+```http
+POST /api/BasketItems/
+```
+
+The request included:
+
+```json
+{
+  "ProductId": 51,
+  "BasketId": "6",
+  "quantity": 1
+}
+```
+
+The server returned `200 OK` and created basket-item ID `9`. These numeric identifiers were recorded for later object-level authorization testing.
+
+Evidence:
+
+* `../screenshots/add-basket-item-request.png`
+* `../screenshots/add-basket-item-response.png`
+
+### Basket Retrieval
+
+Opening the basket generated:
+
+```http
+GET /rest/basket/6
+```
+
+The server returned `200 OK` with basket, user, product and basket-item identifiers. No identifiers were modified during enumeration.
+
+Evidence:
+
+* `../screenshots/view-basket-request.png`
+* `../screenshots/view-basket-response.png`
+
+### Complaint Submission
+
+The complaint function generated:
+
+```http
+POST /api/Complaints/
+```
+
+The observed request contained a user identifier and a user-controlled message. The server returned:
+
+```http
+HTTP/1.1 500 Internal Server Error
+```
+
+The response referenced a database foreign-key constraint failure. This was recorded for later reproduction and investigation. It was not classified as a confirmed vulnerability during enumeration.
+
+Evidence:
+
+* `../screenshots/complaint-request.png`
+* `../screenshots/complaint-error-response.png`
+
+
+## 9. Security-Relevant Observations
 
 The following areas were selected for later manual assessment:
 
@@ -169,7 +254,7 @@ These are testing hypotheses and not confirmed findings.
 
 ---
 
-## 9. Current Status
+## 10. Current Status
 
 Completed enumeration activities:
 
@@ -180,5 +265,8 @@ Completed enumeration activities:
 * Login request mapping
 * Registration request mapping
 * Initial product-search parameter identification
-
+- Product-review request and response mapping
+- Add-to-basket request mapping
+- Basket-retrieval endpoint mapping
+- Complaint endpoint and request-parameter mapping
 
