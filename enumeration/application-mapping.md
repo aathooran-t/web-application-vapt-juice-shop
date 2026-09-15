@@ -151,7 +151,7 @@ Evidence, if completed:
 
 ---
 
-## Additional Function Mapping
+## 8. Additional Function Mapping
 
 ### Product Review
 
@@ -235,24 +235,142 @@ Evidence:
 * `../screenshots/complaint-request.png`
 * `../screenshots/complaint-error-response.png`
 
+### Customer Feedback
+
+The customer-feedback function generated a request to:
+
+```http
+POST /api/Feedbacks
+```
+
+The request contained user-controlled feedback text, a rating and CAPTCHA-related fields. These inputs were recorded for later input-validation and CAPTCHA testing.
+
+No vulnerability was confirmed during enumeration.
+
+Evidence:
+
+* `../screenshots/feedback-request.png`
+* `../screenshots/feedback-response.png`
+
+### Complaint File Upload
+
+The complaint attachment function generated:
+
+```http
+POST /file-upload
+```
+
+The request used `multipart/form-data` and submitted a file named `upload.pdf` with the declared content type `application/pdf`.
+
+The server returned:
+
+```http
+HTTP/1.1 204 No Content
+```
+
+The harmless test file contained plain text but was submitted using a PDF filename and content type. Its acceptance was recorded as a potential file-content validation weakness requiring formal assessment.
+
+Evidence:
+
+* `../screenshots/complaint-file-upload-request.png`
+* `../screenshots/complaint-file-upload-response.png`
+
+### Password-Recovery Question
+
+The password-recovery page used:
+
+```http
+GET /rest/user/security-question?email=
+```
+
+The endpoint returned `200 OK` and disclosed the security-question ID and question associated with the supplied laboratory account email. Authentication was not required.
+
+This behavior was recorded for later account-enumeration and information-disclosure testing.
+
+Evidence:
+
+* `../screenshots/password-recovery-question-request.png`
+* `../screenshots/password-recovery-question-response.png`
+
+### Password Reset
+
+The password-reset function generated:
+
+```http
+POST /rest/user/reset-password
+```
+
+The request included:
+
+```text
+email
+answer
+new
+repeat
+```
+
+The server returned `200 OK` and included a user object containing fields named `email` and `password`. The password field appeared to contain a password hash.
+
+The email address and password-hash value were redacted from the public evidence. This behavior was flagged as potential sensitive-information disclosure requiring formal validation.
+
+Evidence:
+
+* `../screenshots/password-reset-request.png`
+* `../screenshots/password-reset-response.png`
+
+### Profile Update
+
+The authenticated profile-update function generated:
+
+```http
+POST /profile
+```
+
+The request submitted the username as form data. The server returned:
+
+```http
+HTTP/1.1 302 Found
+Location: /profile
+```
+
+The response also issued an updated session token through a `Set-Cookie` header. The token was redacted before publication.
+
+Evidence:
+
+* `../screenshots/profile-update-request.png`
+* `../screenshots/profile-update-response-redacted.png`
+
+
 
 ## 9. Security-Relevant Observations
 
-The following areas were selected for later manual assessment:
+The following areas were selected for formal vulnerability assessment:
 
-* Authentication behavior
+* Authentication and password-recovery behavior
 * Product-search input handling
 * API authorization
 * Administrative REST endpoints
-* User and basket identifiers
-* Product-review inputs
-* Customer-feedback inputs
+* User, basket and product identifiers
+* Product-review and customer-feedback inputs
 * Security questions and answers
 * Session and token handling
+* Complaint file-upload validation
+* Profile-update input handling
+* CORS configuration
+* Information returned by password-reset responses
 
-These are testing hypotheses and not confirmed findings.
+Specific observations requiring validation include:
+
+* Complaint submission returned a database foreign-key constraint error.
+* The file-upload endpoint accepted plain-text content submitted as a PDF.
+* The security-question endpoint returned user-specific information without authentication.
+* The password-reset response returned a user object containing email and password-hash fields.
+* The profile-update response issued a new session token.
+
+These remain testing hypotheses or potential findings until manually validated.
 
 ---
+
 
 ## 10. Current Status
 
@@ -265,8 +383,11 @@ Completed enumeration activities:
 * Login request mapping
 * Registration request mapping
 * Initial product-search parameter identification
-- Product-review request and response mapping
-- Add-to-basket request mapping
-- Basket-retrieval endpoint mapping
-- Complaint endpoint and request-parameter mapping
-
+* Product-review request and response mapping
+* Add-to-basket request mapping
+* Basket-retrieval endpoint mapping
+* Complaint endpoint and request-parameter mapping
+* Complaint file-upload mapping
+* Password-recovery question mapping
+* Password-reset mapping
+* Profile-update mapping
